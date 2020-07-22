@@ -9,6 +9,31 @@ function Square(props) {
     </button>
   );
 }
+
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+
+    if (squares[a] && JSON.stringify(squares[a]) === JSON.stringify(squares[b]) && JSON.stringify(squares[a]) === JSON.stringify(squares[c])) {
+      console.log(JSON.stringify(squares[a]));
+      console.log(JSON.stringify(squares[b]));
+      console.log(JSON.stringify(squares[c]));
+      console.log(squares);
+      return squares[a];
+    }
+  }
+  return null;
+}
   
   class Board extends React.Component {
       constructor(props) {
@@ -21,7 +46,11 @@ function Square(props) {
 
     handleClick(i) {
         const squares = this.state.squares.slice();
-        squares[i] = this.state.xIsNext ? <img src="svg/react.svg"></img> : <img src="svg/angular.svg"></img>;
+
+        if (calculateWinner(squares) || squares[i]) {
+          return;
+        }
+        squares[i] = this.state.xIsNext ? <img src="svg/react.svg" draggable="false" dataidentifier="React" alt="logo"></img> : <img src="svg/angular.svg" draggable="false" dataidentifier="Angular" alt="logo"></img>;
         this.setState({squares: squares, xIsNext: !this.state.xIsNext});
     }
 
@@ -30,8 +59,14 @@ function Square(props) {
     }
   
     render() {
-      const status = `Next player: ${this.state.xIsNext ? "React" : "Angular"}`;
-  
+      const winner = calculateWinner(this.state.squares);
+      let status;
+        if (winner) {
+          status = 'Winner: ' + winner.props.dataidentifier;
+        } else {
+          status = 'Next player: ' + (this.state.xIsNext ? 'React' : 'Angular');
+        }
+      
       return (
         <div>
           <div className="status">{status}</div>
@@ -70,6 +105,8 @@ function Square(props) {
       );
     }
   }
+
+  
   
   // ========================================
   
